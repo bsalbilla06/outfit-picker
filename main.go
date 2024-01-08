@@ -1,43 +1,36 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"log"
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
-type WeatherResp struct {
-	Name string `json:"name"`
-	Main struct {
-		Low  float64 `json:"temp_min"`
-		High float64 `json:"temp_max"`
-	} `json:"main"`
+// Slices of temperature ranges where user will wear certain items of clothing
+type TemperaturePreferences struct {
+	Boots       [2]int
+	Sandals     [2]int
+	Sneakers    [2]int
+	Socks       [2]int
+	Sweatpants  [2]int
+	Jeans       [2]int
+	Slacks      [2]int
+	Shorts      [2]int
+	Skirts      [2]int
+	TankTops    [2]int
+	TShirts     [2]int
+	LongSleeves [2]int
+	CrewNecks   [2]int
+	Hoodies     [2]int
+	Jackets     [2]int
 }
 
 func main() {
-	apiKey := os.Getenv("OPENWEATHERMAP_KEY")
-	url := "https://api.openweathermap.org/data/2.5/weather"
-
-	// City latitude and longitude
-	longitude := os.Getenv("LONGITUDE")
-	latitude := os.Getenv("LATITUDE")
-
-	url = fmt.Sprintf("%s?lon=%s&lat=%s&appid=%s", url, longitude, latitude, apiKey)
-	resp, err := http.Get(url)
+	weatherData, err := RetrieveWeatherData(os.Getenv("OPENWEATHERMAP_KEY"), os.Getenv("LONGITUDE"), os.Getenv("LATITUDE"))
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		log.Fatal(err)
 	}
-	defer resp.Body.Close()
-
-	var weatherData WeatherResp
-	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
-		fmt.Println("Error parsing JSON:", err)
-		return
-	}
-
 	fmt.Println(weatherData)
 }
