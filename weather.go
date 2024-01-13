@@ -14,6 +14,10 @@ type WeatherResp struct {
 	} `json:"main"`
 }
 
+func kelvinToFahrenheit(temp float64) float64 {
+	return (temp - 273.15) * 9/5 + 32
+}
+
 func RetrieveWeatherData(apiKey, longitude, latitude string) (WeatherResp, error) {
 	url := "https://api.openweathermap.org/data/2.5/weather"
 
@@ -28,5 +32,7 @@ func RetrieveWeatherData(apiKey, longitude, latitude string) (WeatherResp, error
 	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
 		return WeatherResp{}, err
 	}
+	weatherData.Main.High = kelvinToFahrenheit(weatherData.Main.High)
+	weatherData.Main.Low = kelvinToFahrenheit(weatherData.Main.Low)
 	return weatherData, nil
 }
